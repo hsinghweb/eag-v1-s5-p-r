@@ -1,0 +1,11 @@
+{
+  "explicit_reasoning": true,
+  "structured_output": true,
+  "tool_separation": true,
+  "conversation_loop": false,
+  "instructional_framing": true,
+  "internal_self_checks": false,
+  "reasoning_type_awareness": true,
+  "fallbacks": false,
+  "overall_clarity": "Highly structured and clear with good tool separation and formatting. Could be improved by supporting conversation continuity, adding internal self-checks, and specifying fallbacks for uncertain cases."
+}
