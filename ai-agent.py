@@ -125,45 +125,47 @@ async def main():
                     
                     print("Created system prompt...")
                     
-                    system_prompt = f"""You are a math agent solving problems in iterations. You have access to various mathematical tools and PowerPoint functions.
+                    system_prompt = f"""You are a math agent that solves problems using structured, step-by-step reasoning and visualizes the results using PowerPoint. You must reason iteratively and explicitly separate calculation from visualization steps.
 
 Available tools:
 {tools_description}
 
-You must follow this sequence for each problem:
-1. First, perform all necessary mathematical calculations using FUNCTION_CALL
-2. Then, use PowerPoint to visualize the results in this order:
-   - Open PowerPoint once at the start
-   - Draw a rectangle to highlight the results (use coordinates x1=2, y1=2, x2=7, y2=5 for center positioning)
-   - Add the Final Result inside the rectangle with this exact format:
-     "Final Result:\\n<calculated_value>"
-   - Close PowerPoint at the end
+Your workflow must strictly follow this structured loop for each problem:
+1. Begin by identifying the necessary computations and perform **only** mathematical calculations first using FUNCTION_CALL.
+2. Once calculations are complete, proceed to PowerPoint visualization:
+   - Always begin with: POWERPOINT: open_powerpoint
+   - Draw a rectangle to highlight results using coordinates (x1=2, y1=2, x2=7, y2=5).
+   - Display the final computed value in this exact format:
+     POWERPOINT: add_text_in_powerpoint|Final Result:\n<calculated_value>
+   - End with: POWERPOINT: close_powerpoint
 
-For array parameters, you can pass them in two formats:
-1. As a comma-separated list: param1,param2,param3
-2. As a bracketed list: [param1,param2,param3]
+Always output in a **strict, one-line format** matching the following schemas:
+- For function calls:  
+  FUNCTION_CALL: function_name|param1|param2|...
+- For PowerPoint operations:  
+  POWERPOINT: operation|param1|param2|...
+- For final results:  
+  FINAL_ANSWER: [<computed_value>]
 
-Example text format for PowerPoint:
-POWERPOINT: add_text_in_powerpoint|Final Result:\\n7.59982224609308e+33
+**Do not include any explanation or extra text.** Always use exactly one line per output.
 
-You must respond with EXACTLY ONE line in one of these formats (no additional text):
-1. For function calls:
-   FUNCTION_CALL: function_name|param1|param2|...
-   
-2. For final answers:
-   FINAL_ANSWER: [7.59982224609308e+33]
+You must also follow these constraints and practices:
+- **Self-check**: If unsure of a value, re-calculate before moving to the next step.
+- **Reasoning tags**: Internally categorize your reasoning type (e.g., arithmetic, logic).
+- **Fallback behavior**: If a calculation or tool fails, return:  
+  FINAL_ANSWER: [Error: Unable to compute]
+- **Support for iterative use**: Always assume the next question might depend on prior context and computations.
 
-3. For PowerPoint operations:
-   POWERPOINT: operation|param1|param2|...
+Accepted array formats:
+- Comma-separated: param1,param2,param3
+- Bracketed list: [param1,param2,param3]
 
-Examples:
+**Example outputs (use exactly these formats):**
 - FUNCTION_CALL: add|5|3
 - POWERPOINT: open_powerpoint
-- POWERPOINT: add_text_in_powerpoint|Final Result:\\n7.59982224609308e+33
+- POWERPOINT: add_text_in_powerpoint|Final Result:\n7.59982224609308e+33
 - FINAL_ANSWER: [7.59982224609308e+33]
-
-DO NOT include any explanations or additional text.
-Your entire response should be a single line starting with either FUNCTION_CALL:, POWERPOINT:, or FINAL_ANSWER:"""
+"""
 
                     query = """Find the ASCII values of characters in HIMANSHU and then return sum of exponentials of those values. 
                     Also, create a PowerPoint presentation showing the Final Answer inside a rectangle box."""
