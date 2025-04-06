@@ -346,6 +346,16 @@ Accepted array formats:
                                         full_text = response_text.split("|", 1)[1].strip()
                                         # Remove any extra quotes and handle newlines
                                         full_text = full_text.replace('"', '').replace("\\n", "\n")
+                                        
+                                        # If this is the final result text, append the calculated value
+                                        if "Final Result:" in full_text:
+                                            # Find the last calculation result from iteration_response
+                                            calc_result = next((resp.split("returned")[1].strip() 
+                                                for resp in reversed(iteration_response) 
+                                                if "int_list_to_exponential_sum" in resp), None)
+                                            if calc_result:
+                                                full_text = f"Final Result:\n{calc_result}"
+                                        
                                         # Ensure proper newline handling
                                         full_text = full_text.replace('\n\n', '\n')
                                         print(f"[Calling Tool] Full text to add: {repr(full_text)}")  # Show raw string representation
